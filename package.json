@@ -1,0 +1,33 @@
+{
+  "name": "alpinist",
+  "version": "0.0.1",
+  "description": "ALPS (Application-Level Profile Semantics) processor",
+  "main": "lib/alpinist.js",
+  "files": ["lib"],
+  "scripts": {
+    "build": "babel src --out-dir lib --source-maps inline",
+    "watch": "babel src --out-dir lib --watch --source-maps inline",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tkawa/alpinist-js.git"
+  },
+  "author": "Toru KAWAMURA",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tkawa/alpinist-js/issues"
+  },
+  "homepage": "https://github.com/tkawa/alpinist-js",
+  "dependencies": {
+    "lodash": "^3.10.0",
+    "array-wrap": "^0.0.2",
+    "treenode": "^0.1.4",
+    "isomorphic-fetch": "^2.1.0",
+    "xml2js": "^0.4.9",
+    "promise-done": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel": "^5.6.14"
+  }
+}
