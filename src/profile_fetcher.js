@@ -1,4 +1,3 @@
-// This module requires es6's Promise
 import fetch from 'isomorphic-fetch';
 
 class ProfileFetcher {

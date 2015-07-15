@@ -8,7 +8,7 @@ class TreeNodeExt extends TreeNode {
   }
 
   nodeDepth() {
-    return this.isRoot ? 0 : 1 + parent.nodeDepth();
+    return this.isRoot() ? 0 : 1 + parent.nodeDepth();
   }
 
   isRoot() {
