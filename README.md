@@ -94,8 +94,8 @@ var fetcher = new ProfileFetcher();
 fetcher.fetch(baseUrl).then((doc) => {
   return Profile.parse(doc, baseUrl);
 }).then((profile) => {
-  var semantics = new Semantics(profile);
-  semantics.build();
+  return new Semantics(profile).build();
+}).then((semantics) => {
   semantics.printTree(); // for debug
 });
 ```
