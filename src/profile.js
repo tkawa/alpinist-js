@@ -1,10 +1,9 @@
 import _ from 'lodash';
 import wrap from 'array-wrap';
-import {TreeNode} from 'treenode';
+import TreeNodeExt from './tree_node_ext';
 import Descriptor from './descriptor';
 import XML2JS from 'xml2js';
 import Done from 'promise-done'
-import Util from 'util';
 
 class Profile {
   constructor(document, url) {
@@ -41,7 +40,6 @@ class Profile {
   }
 
   rootDescriptors() {
-    console.dir(this.rootNodes);
     return this.rootNodes.map((rootNode) => rootNode.descriptor);
   }
 
@@ -94,12 +92,11 @@ class Profile {
       descriptor = new Descriptor({id: id, name: data.name, type: data.type, rt: data.rt, href: data.href, doc: data.doc, ext: data.ext, reference: reference});
       this.insubstantialDescriptors.push(descriptor);
     }
-    var node = new TreeNode({name: id, descriptor: descriptor});
+    var node = new TreeNodeExt({name: id, descriptor: descriptor});
     if (data.descriptor) {
       wrap(data.descriptor).forEach((dataChild) => {
         let child = this._defineDescriptor(dataChild);
-        child.parent = node;
-        node.children.push(child);
+        node.addChildNode(child);
       });
     }
     return node;

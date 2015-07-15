@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import Profile from './profile';
-import {TreeNode} from 'treenode';
+import TreeNodeExt from './tree_node_ext';
 import Done from 'promise-done';
 import ProfileFetcher from './profile_fetcher'
 
@@ -12,16 +12,16 @@ class Semantics {
     this.profileFetching = {
       [initialProfile.url]: Promise.resolve(initialProfile)
     };
+    this.building = [];
     this.nodes = {};
   }
 
   build() {
-    this.initialProfile.allDescriptors().reduce((promise, descriptor) => {
+    this.initialProfile.allDescriptors().forEach((descriptor) => {
       let descriptorUrl = `${this.initialProfile.url}#${descriptor.id}`;
-      return promise.then(() => {
-        this._connectToParent(descriptorUrl, descriptor);
-      });
-    }, Promise.resolve());
+      this._connectToParent(descriptorUrl, descriptor);
+    });
+    return Promise.all(this.building).then(() => this);
   }
 
   findNode(descriptorUrl) {
@@ -29,32 +29,30 @@ class Semantics {
   }
 
   printTree() {
-    console.log(`length: ${this.nodes.keys().length}`);
     _.values(this.nodes).forEach((node) => {
       if (node.isRoot()) {
-        // node.printTree();
-        console.dir(node);
+        node.printTree();
       }
     });
   }
 
   _connectToParent(descriptorUrl, descriptor) {
     if (!this.nodes[descriptorUrl]) {
-      this.nodes[descriptorUrl] = new TreeNode({name: descriptorUrl, descriptor: descriptor});
+      this.nodes[descriptorUrl] = new TreeNodeExt({name: descriptorUrl, descriptor: descriptor});
     }
     var node = this.nodes[descriptorUrl];
     var parentDescriptorUrl = descriptor.href;
     if (parentDescriptorUrl) {
-      var parentDescriptor;
-      this._fetchDescriptor(parentDescriptorUrl).then((parentDescriptor) => {
+      var promise = this._fetchDescriptor(parentDescriptorUrl).then((parentDescriptor) => {
         if (parentDescriptor) {
           console.log(`Descriptor ${parentDescriptorUrl} detected.`);
           let parentNode = this._connectToParent(parentDescriptorUrl, parentDescriptor);
-          parentNode.addChild(node);
+          parentNode.addChildNode(node);
         } else {
           console.log(`Descriptor ${parentDescriptorUrl} not found.`);
         }
       }).catch(Done);
+      this.building.push(promise);
     }
     return node;
   }
