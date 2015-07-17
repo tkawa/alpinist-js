@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import wrap from 'array-wrap';
-import TreeNodeExt from './tree_node_ext';
-import Descriptor from './descriptor';
 import XML2JS from 'xml2js';
 import Done from 'promise-done'
+import Descriptor from './descriptor';
+import TreeNodeExt from './tree_node_ext';
 
 class Profile {
   constructor(document, url) {

@@ -1,27 +1,42 @@
 import _ from 'lodash';
-import Profile from './profile';
-import TreeNodeExt from './tree_node_ext';
 import Done from 'promise-done';
-import ProfileFetcher from './profile_fetcher'
+import {EventEmitter} from 'events';
+import Profile from './profile';
+import ProfileFetcher from './profile_fetcher';
+import TreeNodeExt from './tree_node_ext';
 
-class Semantics {
+class Semantics extends EventEmitter {
   constructor(initialProfile, fetcher = new ProfileFetcher()) {
+    super();
     this.initialProfile = initialProfile;
     this.fetcher = fetcher;
     this.profiles = {[initialProfile.url]: initialProfile};
     this.profileFetching = {
       [initialProfile.url]: Promise.resolve(initialProfile)
     };
-    this.building = [];
     this.nodes = {};
+    this.building = new Set();
   }
 
   build() {
+    this.on('start', (descriptorUrl) => {
+      this.building.add(descriptorUrl);
+    });
+    this.on('end', (descriptorUrl) => {
+      this.building.delete(descriptorUrl);
+      if (this.building.size == 0) {
+        this.emit('built');
+      }
+    });
     this.initialProfile.allDescriptors().forEach((descriptor) => {
       let descriptorUrl = `${this.initialProfile.url}#${descriptor.id}`;
       this._connectToParent(descriptorUrl, descriptor);
     });
-    return Promise.all(this.building).then(() => this);
+    return new Promise((resolve, reject) => {
+      this.on('built', () => {
+        resolve(this);
+      });
+    });
   }
 
   findNode(descriptorUrl) {
@@ -43,7 +58,8 @@ class Semantics {
     var node = this.nodes[descriptorUrl];
     var parentDescriptorUrl = descriptor.href;
     if (parentDescriptorUrl) {
-      var promise = this._fetchDescriptor(parentDescriptorUrl).then((parentDescriptor) => {
+      this.emit('start', parentDescriptorUrl);
+      this._fetchDescriptor(parentDescriptorUrl).then((parentDescriptor) => {
         if (parentDescriptor) {
           console.log(`Descriptor ${parentDescriptorUrl} detected.`);
           let parentNode = this._connectToParent(parentDescriptorUrl, parentDescriptor);
@@ -51,8 +67,9 @@ class Semantics {
         } else {
           console.log(`Descriptor ${parentDescriptorUrl} not found.`);
         }
+      }).then(() => {
+        this.emit('end', parentDescriptorUrl);
       }).catch(Done);
-      this.building.push(promise);
     }
     return node;
   }
@@ -68,7 +85,7 @@ class Semantics {
       if (descriptorId) {
         return profile.findDescriptor(descriptorId);
       } else {
-        return profile.firstDescriptor();
+        return profile.firstDescriptor(); // FIXME
       }
     });
   }
