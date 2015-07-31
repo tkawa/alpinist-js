@@ -10,7 +10,6 @@ class Semantics extends EventEmitter {
     super();
     this.initialProfile = initialProfile;
     this.fetcher = fetcher;
-    this.profiles = {[initialProfile.url]: initialProfile};
     this.profileFetching = {
       [initialProfile.url]: Promise.resolve(initialProfile)
     };
