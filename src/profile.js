@@ -44,7 +44,7 @@ class Profile {
   }
 
   allDescriptors() {
-    return _.values(this.descriptors);
+    return _.values(this.descriptors).concat(this.insubstantialDescriptors);
   }
 
   _defineAll(doc) {
