@@ -16,7 +16,7 @@ class TreeNodeExt extends TreeNode {
   }
 
   isLeaf() {
-    return !hasChildren();
+    return !this.hasChildren();
   }
 
   hasChildren() {
@@ -47,6 +47,34 @@ class TreeNodeExt extends TreeNode {
     let index = siblings.indexOf(this);
     siblings.splice(index, 1);
     return siblings;
+  }
+
+  ancestors() {
+    if (this.isRoot()) {
+      return [];
+    }
+    let ancestors = [];
+    let prevParent = this.parent;
+    while (prevParent) {
+      ancestors.push(prevParent);
+      prevParent = prevParent.parent;
+    }
+    return ancestors;
+  }
+
+  forEach(callback, thisArg) {
+    var T;
+    if (arguments.length > 1) {
+      T = thisArg;
+    }
+    var nodeStack = [this];
+    while (nodeStack.length > 0) {
+      let current = nodeStack.shift();
+      if (current != null) {
+        callback.call(T, current);
+        nodeStack = current.children.concat(nodeStack);
+      }
+    }
   }
 
   printTree(level = this.nodeDepth(), maxDepth = null) {

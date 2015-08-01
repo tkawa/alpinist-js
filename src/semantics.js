@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import Done from 'promise-done';
 import {EventEmitter} from 'events';
+import 'setimmediate';
 import Profile from './profile';
 import ProfileFetcher from './profile_fetcher';
 import TreeNodeExt from './tree_node_ext';
@@ -23,13 +24,17 @@ class Semantics extends EventEmitter {
     });
     this.on('end', (descriptorUrl) => {
       this.building.delete(descriptorUrl);
-      if (this.building.size == 0) {
-        this.emit('built');
-      }
+      setImmediate(() => {
+        if (this.building.size == 0) {
+          this.emit('built');
+        }
+      });
     });
     this.initialProfile.allDescriptors().forEach((descriptor) => {
       let descriptorUrl = `${this.initialProfile.url}#${descriptor.id}`;
+      this.emit('start', descriptorUrl);
       this._connectToParent(descriptorUrl, descriptor);
+      this.emit('end', descriptorUrl);
     });
     return new Promise((resolve, reject) => {
       this.on('built', () => {

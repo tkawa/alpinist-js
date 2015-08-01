@@ -44,7 +44,7 @@ class Profile {
   }
 
   allDescriptors() {
-    return _.values(this.descriptors).concat(this.insubstantialDescriptors);
+    return _.values(this.descriptors);
   }
 
   _defineAll(doc) {
@@ -86,11 +86,16 @@ class Profile {
     } else { // insubstantial
       let url, reference = null;
       [url, id] = data.href.split('#');
-      if (!url) {
+      if (url && url != this.url) {
+        // external reference
+        descriptor = new Descriptor({id: id, name: data.name, type: data.type, rt: data.rt, href: data.href, doc: data.doc, ext: data.ext});
+        this.descriptors[id] = descriptor;
+      } else {
+        // internal reference
         reference = this.descriptors[id];
+        descriptor = new Descriptor({id: id, name: data.name, type: data.type, rt: data.rt, href: data.href, doc: data.doc, ext: data.ext, reference: reference});
+        this.insubstantialDescriptors.push(descriptor);
       }
-      descriptor = new Descriptor({id: id, name: data.name, type: data.type, rt: data.rt, href: data.href, doc: data.doc, ext: data.ext, reference: reference});
-      this.insubstantialDescriptors.push(descriptor);
     }
     var node = new TreeNodeExt({name: id, descriptor: descriptor});
     if (data.descriptor) {
