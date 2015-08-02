@@ -1,6 +1,6 @@
 {
   "name": "alpinist",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "ALPS (Application-Level Profile Semantics) processor",
   "main": "lib/alpinist.js",
   "files": ["lib"],
