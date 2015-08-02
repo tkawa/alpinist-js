@@ -25,6 +25,7 @@
     "treenode": "^0.1.4",
     "isomorphic-fetch": "^2.1.0",
     "xml2js": "^0.4.9",
+    "array.prototype.find": "^1.0.0",
     "promise-done": "^1.0.1",
     "events": "^1.0.2",
     "setimmediate": "^1.0.2"

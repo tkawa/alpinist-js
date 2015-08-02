@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import wrap from 'array-wrap';
 import XML2JS from 'xml2js';
+import 'array.prototype.find';
 import Done from 'promise-done'
 import Descriptor from './descriptor';
 import TreeNodeExt from './tree_node_ext';
