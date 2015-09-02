@@ -13,7 +13,7 @@ class ProfileFetcher {
     } else {
       console.log(`Fetch: ${url}`);
     }
-    return fetch(url).then((res) => res.text())
+    return fetch(url).then((res) => res.text());
   }
 }
 
