@@ -10,7 +10,7 @@ class Semantics extends EventEmitter {
   constructor(initialProfile, fetcher = new ProfileFetcher()) {
     super();
     this.initialProfile = initialProfile;
-    this.fetcher = fetcher;
+    this.fetcher = this._extractBody(fetcher);
     this.profileFetching = {
       [initialProfile.url]: Promise.resolve(initialProfile)
     };
@@ -92,6 +92,20 @@ class Semantics extends EventEmitter {
         return profile.firstDescriptor(); // FIXME
       }
     });
+  }
+
+  _extractBody(fetcher) {
+    return {
+      fetch: (url, as) => {
+        return fetcher.fetch(url, as).then((response) => {
+          if (typeof response.text === 'function') {
+            return response.text();
+          } else {
+            return response;
+          }
+        });
+      }
+    };
   }
 }
 
